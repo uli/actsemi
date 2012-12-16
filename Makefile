@@ -1,4 +1,4 @@
-SUBDIRS = installer launcher demo
+SUBDIRS = libactsemi installer launcher demo
 
 all: subdirs
 
