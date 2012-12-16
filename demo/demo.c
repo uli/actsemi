@@ -1,3 +1,4 @@
+#include <actsemi.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
@@ -5,21 +6,6 @@
 #define VERSION "R1.02"
 
 //#define DEBUG_VERBOSE
-
-int open(const char *pathname, int flags, ...);
-int write(int fd, const void *buf, unsigned int count);
-int close(int fd);
-
-int usleep(int usecs);
-
-void api_install(int id, void **apitbl);
-unsigned int get_count(void);
-
-#define O_WRONLY 0x0001
-#define O_CREAT 0x0200
-#define O_TRUNC 0x0400
-
-#define SEEK_END 2
 
 int p1CoreLoop(void);
 void p1EnqueueKey(void *input);
@@ -195,22 +181,6 @@ int p1_control(int cmd, void *data)
       return 0;
   }
 }
-
-#define SYSCALL(name, no) \
-  asm(".global " #name "\n" \
-      #name ":\n" \
-      "li $v1, " #no "\n" \
-      "syscall 0\n");
-
-SYSCALL(open, 0x60000)
-SYSCALL(write, 0x60003)
-SYSCALL(lseek, 0x60004)
-SYSCALL(close, 0x60001)
-SYSCALL(api_install, 0x10028)
-//SYSCALL(malloc, 0x1003a)
-//SYSCALL(free, 0x1003b)
-SYSCALL(get_count, 0x10038)
-SYSCALL(usleep, 0x70084)
 
 asm(
 ".section .dlsym,\"a\"\n"

@@ -1,8 +1,8 @@
 include ../config.mk
 TARGET = demo.elf
 
-CFLAGS += -O2 -I$(BASELIBC)/include
-LIBS = -L$(BASELIBC) -lc
+CFLAGS += -O2 -I$(BASELIBC)/include -I$(LIBACTSEMI)
+LIBS = -L$(BASELIBC) -lc -L$(LIBACTSEMI) -lactsemi
 OBJS = demo.o
 
 $(TARGET): $(OBJS)
