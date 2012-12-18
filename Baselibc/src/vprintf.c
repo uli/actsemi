@@ -1,3 +1,4 @@
+#ifdef WITH_STDIO
 /*
  * vprintf.c
  */
@@ -9,3 +10,4 @@ int vprintf(const char *format, va_list ap)
 {
 	return vfprintf(stdout, format, ap);
 }
+#endif

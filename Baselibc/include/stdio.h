@@ -33,11 +33,14 @@ struct File
 # define EOF (-1)
 #endif
 
+#ifdef WITH_STDIO
 /* Standard file descriptors - implement these globals yourself. */
 extern FILE* const stdin;
 extern FILE* const stdout;
 extern FILE* const stderr;
+#endif
 
+#ifdef WITH_STDIO
 /* Wrappers around stream write and read */
 __extern_inline size_t fread(void *buf, size_t size, size_t nmemb, FILE *stream)
 {
@@ -50,16 +53,22 @@ __extern_inline size_t fwrite(const void *buf, size_t size, size_t nmemb, FILE *
     if (stream->vmt->write == NULL) return 0;
     return stream->vmt->write(stream, buf, size*nmemb) / size;
 }
+#else
+size_t fwrite(const void *buf, size_t size, size_t nmemb, FILE *stream);
+size_t fread(void *buf, size_t size, size_t nmemb, FILE *stream);
+#endif
 
 __extern_inline int fputs(const char *s, FILE *f)
 {
 	return fwrite(s, 1, strlen(s), f);
 }
 
+#ifdef WITH_STDIO
 __extern_inline int puts(const char *s)
 {
 	return fwrite(s, 1, strlen(s), stdout) + fwrite("\n", 1, 1, stdout);
 }
+#endif
 
 __extern_inline int fputc(int c, FILE *f)
 {
@@ -67,12 +76,14 @@ __extern_inline int fputc(int c, FILE *f)
 	return fwrite(&ch, 1, 1, f) == 1 ? ch : EOF;
 }
 
+#ifndef WITH_STDIO
 __extern char *fgets(char *, int, FILE *);
 __extern_inline int fgetc(FILE *f)
 {
 	unsigned char ch;
 	return fread(&ch, 1, 1, f) == 1 ? ch : EOF;
 }
+#endif
 
 #define putc(c,f)  fputc((c),(f))
 #define putchar(c) fputc((c),stdout)
@@ -104,6 +115,5 @@ struct MemFile
 };
 
 FILE *fmemopen_w(struct MemFile* storage, char *buffer, size_t size);
-
 
 #endif				/* _STDIO_H */

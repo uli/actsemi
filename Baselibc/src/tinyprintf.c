@@ -60,7 +60,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * PRINTF_SUPPORT_LONG because int == long.
  */
 
+#ifdef WITH_STDIO
+#define HAVE_STDIO
+#endif
+
+//#define WITH_STDIO
 #include <stdio.h>
+
+#ifndef HAVE_STDIO
+#undef WITH_STDIO
+#endif
 
 struct param {
     int width; /**< field width */
@@ -343,6 +352,7 @@ int fprintf(FILE *f, const char *fmt, ...)
     return rv;
 }
 
+#ifdef WITH_STDIO
 int printf(const char *fmt, ...)
 {
     va_list va;
@@ -351,6 +361,7 @@ int printf(const char *fmt, ...)
     va_end(va);
     return rv;
 }
+#endif
 
 int vsnprintf(char *str, size_t size, const char *fmt, va_list va)
 {

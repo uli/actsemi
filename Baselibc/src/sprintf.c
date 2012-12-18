@@ -2,6 +2,7 @@
  * sprintf.c
  */
 
+#ifdef WITH_STDIO
 #include <stdio.h>
 #include <unistd.h>
 
@@ -16,3 +17,4 @@ int sprintf(char *buffer, const char *format, ...)
 
 	return rv;
 }
+#endif

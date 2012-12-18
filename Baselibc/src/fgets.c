@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 
+#ifdef WITH_STDIO
 char *fgets(char *s, int n, FILE *f)
 {
 	int ch;
@@ -29,3 +30,4 @@ char *fgets(char *s, int n, FILE *f)
 
 	return s;
 }
+#endif

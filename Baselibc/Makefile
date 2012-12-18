@@ -2,11 +2,18 @@
 # e.g. make PLATFORM=cortex-m3
 CFLAGS += -g -Wall -Werror -I include
 
+PLATFORM ?= mipsel
+
 ifeq ($(PLATFORM),cortex-m3)
   CFLAGS  += -fno-common -Os
   CC      = arm-none-eabi-gcc
   AR      = arm-none-eabi-ar
   CFLAGS += -mcpu=cortex-m3 -mthumb
+endif
+ifeq ($(PLATFORM),mipsel)
+  CC	  = mipsel-sde-elf-gcc
+  AR      = mipsel-sde-elf-ar
+  CFLAGS += -G0 -mno-gpopt -march=mips32r2 -Os
 endif
 
 # With this, the makefile should work on Windows also.
