@@ -1,4 +1,4 @@
-BASELIBC = ../../Baselibc
+BASELIBC = ../Baselibc
 LIBACTSEMI = ../libactsemi
 
 CC = mipsel-sde-elf-gcc
