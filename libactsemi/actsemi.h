@@ -54,7 +54,22 @@ void *dlopen(const char *filename, int flag);
 void *dlsym(void *handle, const char *symbol);
 int dlclose(void *handle);
 
+typedef void* pthread_t;
+typedef uint8_t pthread_attr_t[0x28];
+int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
+                   void *(*start_routine) (void *), void *arg);
+int pthread_join(pthread_t thread, void **retval);
+int pthread_cancel(pthread_t thread);
+void pthread_exit(void *retval);
+
 unsigned int get_count(void);
+int clock_gettime(int clk, uint32_t *time);
+
+struct timeval {
+  uint32_t tv_sec;
+  uint32_t tv_usec;
+};
+int gettimeofday(struct timeval *tv, void *tz);
 
 #define O_RDONLY 0x0000
 #define O_WRONLY 0x0001
