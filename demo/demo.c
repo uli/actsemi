@@ -51,8 +51,26 @@ struct rect screen_size;
 uint16_t *screen_fb;
 int redraw = 0;
 
+uint32_t thread_start_time = 0;
+int exit_thread = 0;
+pthread_t pt;
+void *thread_fun(void *data)
+{
+  char t[48];
+  int count = 0;
+  while (!exit_thread) {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    sprintf(t, "thread %d at %d/%d\n", ++count, tv.tv_sec, tv.tv_usec);
+    write(fd, t, strlen(t));
+    usleep(20000);
+  }
+  return NULL;
+}
+
 int p1CoreLoop(void)
 {
+  usleep(10000);
   static unsigned int last_run = 0;
   unsigned int elapsed = get_count() - last_run;
   if (elapsed < 16) {
@@ -126,6 +144,8 @@ int p1_control(int cmd, void *data)
   
   switch (cmd) {
     case 0:	/* init */
+      thread_start_time = get_count();
+      pthread_create(&pt, NULL, thread_fun, NULL);
       return 0;
     case 1:	/* reset */
       write(fd, "reset!\n", 7);
@@ -135,7 +155,9 @@ int p1_control(int cmd, void *data)
       write(fd, t, strlen(t));
       return 0;
     case 3:
-      write(fd, "shutdown\n", 9);
+      exit_thread = 1;
+      pthread_join(pt, NULL);
+      write(fd, "xshutdown\n", 9);
       close(fd);
       return 0;
     case 4:
@@ -144,6 +166,10 @@ int p1_control(int cmd, void *data)
       return 0;
     case 7:	/* sound enable */
       sprintf(t, "sound enable %d\n", *((int *)data));
+      write(fd, t, strlen(t));
+      return 0;
+    case 10:	/* suspend? */
+      sprintf(t, "suspend\n");
       write(fd, t, strlen(t));
       return 0;
     case 13:	/* get our dimensions, format */
