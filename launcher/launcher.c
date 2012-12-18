@@ -191,18 +191,6 @@ int launcher_control(int cmd, void *data)
       "li $v1, " #no "\n" \
       "syscall 0\n");
 
-SYSCALL(open, 0x60000)
-SYSCALL(write, 0x60003)
-SYSCALL(close, 0x60001)
-SYSCALL(read,   0x60002)
-
-SYSCALL(api_install, 0x10028)
-SYSCALL(api_uninstall, 0x10029)
-
-SYSCALL(dlopen,  0x1006c)
-SYSCALL(dlclose, 0x1006d)
-SYSCALL(dlsym,   0x1006e)
-
 asm(
 ".section .dlsym,\"a\"\n"
 ".word P1_SO_VERSION\n"
