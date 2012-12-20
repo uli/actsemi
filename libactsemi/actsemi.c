@@ -57,11 +57,15 @@ SYSCALL(__syscall_10021, 0x10021)
 SYSCALL(api_install,   0x10028)
 SYSCALL(api_uninstall, 0x10029)
 
-SYSCALL(printf, 0x10032)
+SYSCALL(printf,         0x10032)
+SYSCALL(serial_getc,    0x10033) /* from syscfg.sys symbol table */
+SYSCALL(reset_baudrate, 0x10034) /* from syscfg.sys symbol table */
 
-SYSCALL(mdelay,    0x10035)
-SYSCALL(udelay,    0x10036)
-SYSCALL(get_count, 0x10038)
+SYSCALL(mdelay,         0x10035)
+SYSCALL(udelay,         0x10036)
+SYSCALL(__syscall_rand, 0x10037) /* from syscfg.sys symbol table */
+SYSCALL(get_count,      0x10038)
+SYSCALL(get_c0_count,   0x10039) /* from syscfg.sys symbol table */
 
 SYSCALL(malloc,       0x1003a)
 SYSCALL(free,         0x1003b)
@@ -69,6 +73,7 @@ SYSCALL(malloc_dma,   0x1003c)
 SYSCALL(free_dma,     0x1003d)
 SYSCALL(realloc,      0x1003e)
 SYSCALL(os_mem_query, 0x1003f)
+SYSCALL(print_mem,    0x10040) /* from syscfg.sys symbol table */
 
 SYSCALL(sys_mount,     0x10041)
 SYSCALL(sys_umount,    0x10042)
@@ -78,31 +83,38 @@ SYSCALL(sys_close,     0x10045)
 SYSCALL(sys_read,      0x10046)
 SYSCALL(sys_write,     0x10047)
 SYSCALL(sys_lseek,     0x10048)
+SYSCALL(sys_fcntl,     0x10049)
+SYSCALL(sys_creat,     0x1004a) /* from syscfg.sys symbol table */
 SYSCALL(sys_rename,    0x1004b) /* from libc_fs.so */
-SYSCALL(__syscall_1004c, 0x1004c) /* called by 0x60009 */
-SYSCALL(__syscall_1004d, 0x1004d) /* called by 0x6000e */
+SYSCALL(sys_chdir,     0x1004c) /* from syscfg.sys symbol table, called by 0x60009, always returns EINVAL */
+SYSCALL(sys_getcwd,    0x1004d) /* from syscfg.sys symbol table, called by 0x6000e, always returns EINVAL */
 SYSCALL(sys_mkdir,     0x1004e)
 SYSCALL(sys_rmdir,     0x1004f) /* from libc_fs.so */
 SYSCALL(sys_fstat,     0x10050)
 SYSCALL(sys_stat,      0x10051) /* from libc_fs.so */
 SYSCALL(sys_statfs,    0x10052) /* from libc_fs.so */
 SYSCALL(sys_utime,     0x10053) /* from libc_fs.so */
-SYSCALL(__syscall_10054, 0x10054) /* called by 0x6000c */
+SYSCALL(sys_truncate,  0x10054) /* from syscfg.sys symbol table, called by 0x6000c */
 SYSCALL(sys_ftruncate, 0x10055)
 SYSCALL(sys_fsync,     0x10056)
-SYSCALL(__syscall_10057, 0x10057) /* called by 0x6000a */
+SYSCALL(sys_fchdir,    0x10057) /* from syscfg.sys symbol table, called by 0x6000a */
+SYSCALL(sys_flock,     0x10058) /* from syscfg.sys symbol table */
 SYSCALL(sys_remove,    0x10059)
-SYSCALL(__syscall_1005a, 0x1005a)
-SYSCALL(__syscall_1005e, 0x1005e)
-SYSCALL(__syscall_1005f, 0x1005f)
-SYSCALL(__syscall_10060, 0x10060)
+SYSCALL(sys_tell,      0x1005a) /* from syscfg.sys symbol table */
+SYSCALL(sys_readdir,   0x1005b) /* from syscfg.sys symbol table */
+SYSCALL(sys_seekdir,   0x1005c) /* from syscfg.sys symbol table */
+SYSCALL(sys_rewinddir, 0x1005d) /* from syscfg.sys symbol table */
+SYSCALL(sys_lastdir,   0x1005e) /* from syscfg.sys symbol table, called by 0x60031 */
+SYSCALL(sys_prevdir,   0x1005f) /* from syscfg.sys symbol table, called by 0x6002c */
+SYSCALL(sys_reset2parentdir, 0x10060) /* from syscfg.sys symbol table, called by 0x60032 */
 SYSCALL(sys_ioctl,     0x10061)
 SYSCALL(sys_mmap,      0x10062)
 SYSCALL(sys_munmap,    0x10063)
 
-SYSCALL(__syscall_10064, 0x10064)
-SYSCALL(__syscall_10066, 0x10066)
-SYSCALL(__syscall_10067, 0x10067)
+SYSCALL(sys_msync,     0x10064) /* from syscfg.sys symbol table, unimplemented */
+SYSCALL(fork,          0x10065) /* unimplemented */
+SYSCALL(_execve,       0x10066) /* from syscfg.sys symbol table */
+SYSCALL(_exit,           0x10067) /* from syscfg.sys debug string */
 SYSCALL(sys_shm_open,    0x10068) /* called by 0x70098 */
 SYSCALL(sys_shm_unlink,  0x10069) /* called by 0x70099 */
 
@@ -162,9 +174,18 @@ SYSCALL(__syscall_2003c,   0x2003c)
 SYSCALL(kernel_sym, 0x2003e)
 
 SYSCALL(init_timer,     0x2003f)
+SYSCALL(add_timer,      0x20040) /* from syscfg.sys symbol table */
 SYSCALL(mod_timer,      0x20041)
+SYSCALL(del_timer,      0x20044) /* from syscfg.sys symbol table */
 SYSCALL(del_timer_sync, 0x20043)
+
+SYSCALL(__syscall_20055, 0x20055)
+
 SYSCALL(get_ab_timer, 0x2005c)
+SYSCALL(get_ab_ticks, 0x2005d) /* from syscfg.sys symbol table */
+
+SYSCALL(set_load_from_pc,          0x2005e) /* from syscfg.sys debug string */
+SYSCALL(set_image_path_name_of_pc, 0x2005f) /* from syscfg.sys debug string */
 
 SYSCALL(printk, 0x20062)
 
@@ -228,26 +249,26 @@ SYSCALL(gui_enable_memory_font,           0x30084)
 SYSCALL(gui_convert_bidi,                 0x30087)
 SYSCALL(gui_is_bidi_language,             0x30088)
 
-SYSCALL(open,      0x60000)
-SYSCALL(close,     0x60001)
-SYSCALL(read,      0x60002)
-SYSCALL(write,     0x60003)
-SYSCALL(lseek,     0x60004)
-SYSCALL(fcntl,     0x60005)
-SYSCALL(creat,     0x60006)
-SYSCALL(remove,    0x60007)
-SYSCALL(rename,    0x60008)
+SYSCALL(open,           0x60000)
+SYSCALL(close,          0x60001)
+SYSCALL(read,           0x60002)
+SYSCALL(write,          0x60003)
+SYSCALL(lseek,          0x60004)
+SYSCALL(fcntl,          0x60005)
+SYSCALL(creat,          0x60006)
+SYSCALL(remove,         0x60007)
+SYSCALL(rename,         0x60008)
 SYSCALL(__syscall_libc_fs_60009, 0x60009)
 SYSCALL(__syscall_libc_fs_6000a, 0x6000a)
-SYSCALL(fsync,     0x6000b) /* from libc_fs.so */
+SYSCALL(fsync,          0x6000b) /* from libc_fs.so */
 SYSCALL(__syscall_libc_fs_6000c, 0x6000c)
-SYSCALL(ftruncate, 0x6000d)
 SYSCALL(__syscall_libc_fs_6000e, 0x6000e)
-SYSCALL(mkdir,     0x6000f)
-SYSCALL(rmdir,     0x60010)
-SYSCALL(fstat,     0x60011)
-SYSCALL(stat,      0x60012)
-SYSCALL(utime,     0x60013)
+SYSCALL(ftruncate,      0x6000d)
+SYSCALL(mkdir,          0x6000f)
+SYSCALL(rmdir,          0x60010)
+SYSCALL(fstat,          0x60011)
+SYSCALL(stat,           0x60012)
+SYSCALL(utime,          0x60013)
 
 SYSCALL(fopen,    0x60014)
 SYSCALL(fclose,   0x60015)
@@ -273,7 +294,7 @@ SYSCALL(fsetpos,  0x60028)
 SYSCALL(geterror, 0x60029)
 SYSCALL(opendir,  0x6002a)
 SYSCALL(readdir,  0x6002b)
-SYSCALL(__syscall_libc_fs_6002c, 0x6002c)
+SYSCALL(prevdir,  0x6002c) /* from libc_fs.so analysis */
 SYSCALL(__syscall_libc_fs_6002d, 0x6002d)
 SYSCALL(__syscall_libc_fs_6002e, 0x6002e)
 SYSCALL(rewinddir, 0x6002f) /* from libc_fs.so analysis */
@@ -555,6 +576,7 @@ SYSCALL(set_config,       0x110001)
 SYSCALL(rest_config,      0x110002)
 SYSCALL(reset_all_config, 0x110003)
 SYSCALL(clear_hds,        0x110004)
+SYSCALL(__syscall_110005, 0x110005)
 SYSCALL(sync_config,      0x110006)
 SYSCALL(nandflash_update, 0x110007)
 
