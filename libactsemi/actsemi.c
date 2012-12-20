@@ -11,6 +11,8 @@ Naming scheme:
 - "__syscall_[<module name>_]<hex number>": unknown system call
 - "__syscall_<name>": known syscall that conflicts with Baselibc and is
   better implemented there
+- "__broken_<name>": known syscall that does not work as you would
+  expect
 - all other names: canonical names extracted from firmware binaries
   unless noted otherwise
 
@@ -112,7 +114,7 @@ SYSCALL(sys_mmap,      0x10062)
 SYSCALL(sys_munmap,    0x10063)
 
 SYSCALL(sys_msync,     0x10064) /* from syscfg.sys symbol table, unimplemented */
-SYSCALL(fork,          0x10065) /* unimplemented */
+SYSCALL(__broken_fork, 0x10065) /* unimplemented */
 SYSCALL(_execve,       0x10066) /* from syscfg.sys symbol table */
 SYSCALL(_exit,           0x10067) /* from syscfg.sys debug string */
 SYSCALL(sys_shm_open,    0x10068) /* called by 0x70098 */
@@ -258,12 +260,12 @@ SYSCALL(fcntl,          0x60005)
 SYSCALL(creat,          0x60006)
 SYSCALL(remove,         0x60007)
 SYSCALL(rename,         0x60008)
-SYSCALL(__syscall_libc_fs_60009, 0x60009)
+SYSCALL(__broken_chdir, 0x60009) /* from libc_fs.so analysis, always returns EINVAL */
 SYSCALL(__syscall_libc_fs_6000a, 0x6000a)
 SYSCALL(fsync,          0x6000b) /* from libc_fs.so */
 SYSCALL(__syscall_libc_fs_6000c, 0x6000c)
-SYSCALL(__syscall_libc_fs_6000e, 0x6000e)
 SYSCALL(ftruncate,      0x6000d)
+SYSCALL(__broken_getcwd, 0x6000e) /* from libc_fs.so analysis, always returns EINVAL */
 SYSCALL(mkdir,          0x6000f)
 SYSCALL(rmdir,          0x60010)
 SYSCALL(fstat,          0x60011)
