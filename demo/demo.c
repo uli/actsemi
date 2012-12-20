@@ -2,6 +2,11 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <pthread.h>
+#include <dirent.h>
 
 #define VERSION "R1.02"
 
@@ -11,6 +16,7 @@ int p1CoreLoop(void);
 void p1EnqueueKey(void *input);
 int p1_control(int cmd, void *data);
 
+/* Table of functions called by the framework to control the "emulator". */
 void *p1apitbl[] = {
   p1CoreLoop,
   p1EnqueueKey,
@@ -23,10 +29,14 @@ int fd;	/* debug output fd */
 
 void  __attribute__ ((section (".init"))) _init_proc(void)
 {
+  /* Do a few tests first before playing game. */
+
   fd = open("/mnt/disk0/test.txt", O_WRONLY | O_CREAT | O_TRUNC);
 #define HELLO_WORLD "Hello, World, version " VERSION "!\n"
+  /* Test write(). */
   write(fd, HELLO_WORLD, sizeof(HELLO_WORLD) - 1);
 
+  /* Now we're finally being good citizens and submitting our interface. */
   api_install(7, p1apitbl);
 }
 
@@ -34,12 +44,16 @@ void __attribute__ ((section (".fini"))) _term_proc(void)
 {
 }
 
+/* No idea what this is good for. */
 uint32_t general_plugin_info = 0;
 uint32_t *get_plugin_info(void)
 {
   return &general_plugin_info;
 }
 
+/* Version symbol the updater uses to determine if it should update an
+   emulator. This demo will usually be run by our own launcher, which
+   doesn't care about the version. */
 const char *P1_SO_VERSION = VERSION;
 
 struct rect {
@@ -54,8 +68,10 @@ int redraw = 0;
 uint32_t thread_start_time = 0;
 int exit_thread = 0;
 pthread_t pt;
+/* Demonstration thread. */
 void *thread_fun(void *data)
 {
+  (void)data;
   char t[48];
   int count = 0;
   while (!exit_thread) {
@@ -68,10 +84,13 @@ void *thread_fun(void *data)
   return NULL;
 }
 
+/* Worker function called periodically by the framework. */
 int p1CoreLoop(void)
 {
-  usleep(10000);
   static unsigned int last_run = 0;
+  /* The framework will incessantly call the API functions in a loop, so
+     we need to give up some CPU time for our demo thread. */
+  usleep(10000);
   unsigned int elapsed = get_count() - last_run;
   if (elapsed < 16) {
     //if (elapsed < 6)
@@ -79,6 +98,7 @@ int p1CoreLoop(void)
     return 0;
   }
   last_run = get_count();
+  /* Draw a moving horizontal bar. */
   static int y = 0;
   static int dir = 1;
 #ifdef DEBUG_VERBOSE
@@ -96,6 +116,7 @@ int p1CoreLoop(void)
 
 void p1EnqueueKey(void *input)
 {
+  (void)input;
 #ifdef DEBUG_VERBOSE
   write(fd, "key\n", 4);
 #endif
@@ -109,6 +130,7 @@ struct cmd_22 {
 
 int cmd_22(struct cmd_22 *data)
 {
+  (void)data;
   return 0;
 }
 
@@ -126,6 +148,7 @@ struct rect_form {
   uint32_t format;
 };
 
+/* Tell the system what kind of frame buffer we would like to have. */
 int get_our_dimensions(struct rect_form *rf)
 {
   rf->w = 320;
@@ -134,8 +157,12 @@ int get_our_dimensions(struct rect_form *rf)
   return 0;
 }
 
+/* Called by the framework to change the state of the "emulator". */
 int p1_control(int cmd, void *data)
 {
+  /* All commands should (except command 17 (redraw)) should always return 0.
+     If they don't, the framework will assume there has been an error and
+     abort. */
   int ret;
 #ifdef DEBUG_VERBOSE
   sprintf(t, "cmd %d data 0x%x\n", cmd, (unsigned int)data);
@@ -150,11 +177,11 @@ int p1_control(int cmd, void *data)
     case 1:	/* reset */
       write(fd, "reset!\n", 7);
       return 0;
-    case 2:	/* game name? */
+    case 2:	/* game name */
       sprintf(t, "name %s\n", (char *)data);
       write(fd, t, strlen(t));
       return 0;
-    case 3:
+    case 3:	/* shutdown */
       exit_thread = 1;
       pthread_join(pt, NULL);
       write(fd, "xshutdown\n", 9);
@@ -168,13 +195,13 @@ int p1_control(int cmd, void *data)
       sprintf(t, "sound enable %d\n", *((int *)data));
       write(fd, t, strlen(t));
       return 0;
-    case 10:	/* suspend? */
+    case 10:	/* suspend */
       sprintf(t, "suspend\n");
       write(fd, t, strlen(t));
       return 0;
     case 13:	/* get our dimensions, format */
       return get_our_dimensions((struct rect_form *)data);
-    case 14:
+    case 14:	/* set frame buffer */
 #ifdef DEBUG_VERBOSE
       sprintf(t, "framebuffer addr 0x%x\n", *((unsigned int *)data));
       write(fd, t, strlen(t));
@@ -188,6 +215,8 @@ int p1_control(int cmd, void *data)
       write(fd, t, strlen(t));
       return 0;
     case 17:	/* get redraw flag */
+      /* If we return 1 here, the framework will blit the frame buffer
+         to the device screen. */
 #ifdef DEBUG_VERBOSE
       sprintf(t, "redraw?\n");
       write(fd, t, strlen(t));
