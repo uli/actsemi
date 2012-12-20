@@ -11,13 +11,18 @@
 #include <stddef.h>
 #include <string.h>
 
+#ifdef WITH_STDIO
 /* The File structure is designed to be compatible with ChibiOS/RT type
  * BaseSequentialStream.
  */
 struct File;
 
 typedef struct File FILE;
+#else
+typedef void FILE;
+#endif
 
+#ifdef BASELIBC_INTERNAL
 struct File_methods
 {
     size_t (*write)(FILE* instance, const char *bp, size_t n);
@@ -28,17 +33,16 @@ struct File
 {
     const struct File_methods *vmt;
 };
+#endif
 
 #ifndef EOF
 # define EOF (-1)
 #endif
 
-#ifdef WITH_STDIO
 /* Standard file descriptors - implement these globals yourself. */
-extern FILE* const stdin;
-extern FILE* const stdout;
-extern FILE* const stderr;
-#endif
+extern FILE* stdin;
+extern FILE* stdout;
+extern FILE* stderr;
 
 #ifdef WITH_STDIO
 /* Wrappers around stream write and read */
@@ -104,6 +108,7 @@ __extern int vasprintf(char **, const char *, va_list);
 __extern int sscanf(const char *, const char *, ...);
 __extern int vsscanf(const char *, const char *, va_list);
 
+#if defined(WITH_STDIO) || defined(BASELIBC_INTERNAL)
 /* Open a memory buffer for writing.
  Note: Does not write null terminator.*/
 struct MemFile
@@ -115,5 +120,6 @@ struct MemFile
 };
 
 FILE *fmemopen_w(struct MemFile* storage, char *buffer, size_t size);
+#endif
 
 #endif				/* _STDIO_H */

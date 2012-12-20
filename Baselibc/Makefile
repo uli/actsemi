@@ -1,6 +1,6 @@
 # You can override the CFLAGS and C compiler externally,
 # e.g. make PLATFORM=cortex-m3
-CFLAGS += -g -Wall -Werror -I include
+CFLAGS += -g -Wall -Werror -I include -DBASELIBC_INTERNAL
 
 PLATFORM ?= mipsel
 

@@ -60,16 +60,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * PRINTF_SUPPORT_LONG because int == long.
  */
 
-#ifdef WITH_STDIO
-#define HAVE_STDIO
-#endif
-
-//#define WITH_STDIO
 #include <stdio.h>
-
-#ifndef HAVE_STDIO
-#undef WITH_STDIO
-#endif
 
 struct param {
     int width; /**< field width */
