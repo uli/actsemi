@@ -1,5 +1,6 @@
-BASELIBC = ../Baselibc
-LIBACTSEMI = ../libactsemi
+ACTSEMI ?= ..
+LIBACTSEMI = $(ACTSEMI)/libactsemi
+BASELIBC = $(ACTSEMI)/Baselibc
 
 CC = mipsel-sde-elf-gcc
 LD = $(CC)
