@@ -25,7 +25,56 @@ void *p1apitbl[] = {
 const void *p1apitbl_p = p1apitbl;
 
 char t[256];	/* text buffer */
-int fd;	/* debug output fd */
+int fd;		/* debug output fd */
+FILE *fp;	/* debug output file pointer */
+
+/* Dump the contents of a directory. */
+void dumpdir(const char *dir, int recurse, int raw)
+{
+  DIR *dp = opendir(dir);
+  if (!dp) {
+    fprintf(fp, "failed to open %s\n", dir);
+    return;
+  }
+  struct dirent *de;
+  while ((de = readdir(dp))) {
+    if (!strcmp(de->d_name, ".") || !strcmp(de->d_name, ".."))
+      continue;
+
+    if (raw) {
+      /* /mnt/sdisk's file system seems to have a different dirent
+         structure... */
+      fprintf(fp, "%s", dir);
+      uint8_t *x = (uint8_t *)de;
+      int i;
+      for (i = 0; i < 16; i++) {
+        fprintf(fp, " %02X", x[i]);
+      }
+      fprintf(fp, "[%s] \n", x);
+    }
+    else
+      fprintf(fp, "%s/%s %d\n", dir, de->d_name, de->d_type);
+
+    if (recurse && (de->d_type & DT_DIR) && !raw) {
+      char rd[256];
+      sprintf(rd, "%s/%s", dir, de->d_name);
+      dumpdir(rd, recurse++, raw);
+    }
+  }
+  closedir(dp);
+}
+
+/* Dump the contents of various file systems. */
+void find(void)
+{
+  dumpdir("/mnt", 0, 0);	/* doesn't work */
+  dumpdir("/mnt/disk0", 1, 0);	/* standard internal storage */
+  dumpdir("/mnt/sdisk", 1, 1);	/* contains the OS, weird */
+  dumpdir("/mnt/diska", 1, 0);	/* contains emulators and user interface */
+  dumpdir("/mnt/card", 1, 0);	/* SD card? */
+  dumpdir("/mnt/udisk", 1, 0);
+  dumpdir("/mnt/sbakdisk", 1, 1);
+}
 
 void  __attribute__ ((section (".init"))) _init_proc(void)
 {
@@ -35,6 +84,17 @@ void  __attribute__ ((section (".init"))) _init_proc(void)
 #define HELLO_WORLD "Hello, World, version " VERSION "!\n"
   /* Test write(). */
   write(fd, HELLO_WORLD, sizeof(HELLO_WORLD) - 1);
+  /* Test sprintf(). */
+  sprintf(t, "foo%d\n", 1);
+  write(fd, t, strlen(t));
+
+  /* Test stdio. */
+  fp = fopen("/mnt/disk0/ftest.txt", "w");
+  setbuf(fp, NULL);
+  fprintf(fp, "Huhu!\n");
+  fprintf(fp, "Huhu%d\n", 1);
+  find();
+  fclose(fp);
 
   /* Now we're finally being good citizens and submitting our interface. */
   api_install(7, p1apitbl);
