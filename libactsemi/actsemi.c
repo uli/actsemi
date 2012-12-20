@@ -676,11 +676,3 @@ SYSCALL(enable_module_clk,       0x1a0004)
 SYSCALL(disable_module_clk,      0x1a0005)
 SYSCALL(get_gpio,                0x1a0009)
 
-#include "actsemi.h"
-
-int do_gettimeofday(struct timeval *tv);
-int gettimeofday(struct timeval *tv, void *tz)
-{
-  (void)tz;
-  return do_gettimeofday(tv);
-}
