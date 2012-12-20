@@ -125,7 +125,6 @@ struct rect screen_size;
 uint16_t *screen_fb;
 int redraw = 0;
 
-uint32_t thread_start_time = 0;
 int exit_thread = 0;
 pthread_t pt;
 /* Demonstration thread. */
@@ -151,13 +150,14 @@ int p1CoreLoop(void)
   /* The framework will incessantly call the API functions in a loop, so
      we need to give up some CPU time for our demo thread. */
   usleep(10000);
-  unsigned int elapsed = get_count() - last_run;
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  unsigned int elapsed = tv.tv_sec * 1000 + tv.tv_usec / 1000 - last_run;
   if (elapsed < 16) {
-    //if (elapsed < 6)
-    //  usleep(5000);
     return 0;
   }
-  last_run = get_count();
+  last_run = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+
   /* Draw a moving horizontal bar. */
   static int y = 0;
   static int dir = 1;
@@ -231,7 +231,6 @@ int p1_control(int cmd, void *data)
   
   switch (cmd) {
     case 0:	/* init */
-      thread_start_time = get_count();
       pthread_create(&pt, NULL, thread_fun, NULL);
       return 0;
     case 1:	/* reset */
