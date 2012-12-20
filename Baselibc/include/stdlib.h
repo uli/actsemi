@@ -81,4 +81,6 @@ __extern_inline void srandom(unsigned int __s)
 	srand48(__s);
 }
 
+__extern void abort(void);
+
 #endif				/* _STDLIB_H */

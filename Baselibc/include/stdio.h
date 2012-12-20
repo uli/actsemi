@@ -122,4 +122,16 @@ struct MemFile
 FILE *fmemopen_w(struct MemFile* storage, char *buffer, size_t size);
 #endif
 
+int remove(const char *pathname);
+int rename(const char *oldpath, const char *newpath);
+
+FILE *fopen(const char *path, const char *mode);
+int fclose(FILE *);
+int fseek(FILE *, long offset, int whence);
+long ftell(FILE *);
+void setbuf(FILE *stream, char *buf);
+size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
+size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
+char *fgets(char *s, int size, FILE *stream);
+
 #endif				/* _STDIO_H */
