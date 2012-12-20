@@ -4,6 +4,7 @@
  * Very simple linked-list based malloc()/free().
  */
 
+#ifdef WITH_MALLOC
 #include <stdbool.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -263,3 +264,4 @@ void set_malloc_locking(malloc_lock_t lock, malloc_unlock_t unlock)
     else
         malloc_unlock = &malloc_unlock_nop;
 }
+#endif
