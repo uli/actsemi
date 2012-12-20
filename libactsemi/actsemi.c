@@ -4,6 +4,28 @@
       "li $v1, " #no "\n" \
       "syscall 0\n");
 
+/*
+
+Naming scheme:
+~~~~~~~~~~~~~~
+- "__syscall_[<module name>_]<hex number>": unknown system call
+- "__syscall_<name>": known syscall that conflicts with Baselibc and is
+  better implemented there
+- all other names: canonical names extracted from firmware binaries
+  unless noted otherwise
+
+Source of information:
+~~~~~~~~~~~~~~~~~~~~~~
+- "from <module name> symbol table": name found in the symbol table
+  some "plain binary" files (notably syscfg.bin) have
+- "from <module name> debug string": name deduced from debug output in
+  system call implementation
+- "from <module name> analysis": deduced from behavior of syscall
+  implementation or usage patterns
+- no comment: found in unstripped ELF binary symbol table
+
+*/
+
 SYSCALL(__syscall_10001, 0x10001)
 
 SYSCALL(os_sched_lock,   0x10002)
