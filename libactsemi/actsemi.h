@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdint.h>
 
+void *kmalloc(uint32_t size);
+void kfree(void *ptr);
 
 #define SEEK_SET 0
 #define SEEK_CUR 1
