@@ -10,6 +10,7 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <string.h>
+#include <sys/types.h>
 
 #ifdef WITH_STDIO
 /* The File structure is designed to be compatible with ChibiOS/RT type
