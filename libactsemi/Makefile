@@ -1,4 +1,5 @@
 include ../config.mk
+CFLAGS += -I$(BASELIBC)/include
 OBJS = actsemi.o
 all: libactsemi.a
 
