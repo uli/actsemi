@@ -279,9 +279,9 @@ SYSCALL(__syscall_libc_fs_60017, 0x60017)
 SYSCALL(__syscall_libc_fs_60018, 0x60018)
 SYSCALL(fread,    0x60019)
 SYSCALL(fwrite,   0x6001a)
-SYSCALL(__syscall_libc_fs_6001b, 0x6001b)
-SYSCALL(__syscall_libc_fs_6001c, 0x6001c)
-SYSCALL(__syscall_libc_fs_6001d, 0x6001d)
+SYSCALL(__syscall_libc_fs_6001b, 0x6001b) /* could be fgetc() */
+SYSCALL(__syscall_libc_fs_6001c, 0x6001c) /* could be fputc() */
+SYSCALL(__syscall_fputs, 0x6001d) /* from libc_fs.so analysis */
 SYSCALL(fgets,    0x6001e)
 SYSCALL(fileno,   0x6001f)
 SYSCALL(fseek,    0x60020)
@@ -291,7 +291,7 @@ SYSCALL(rewind,   0x60023)
 SYSCALL(setbuf,   0x60024)
 SYSCALL(__syscall_libc_fs_60025, 0x60025)
 SYSCALL(__syscall_libc_fs_60026, 0x60026)
-SYSCALL(__syscall_libc_fs_60027, 0x60027)
+SYSCALL(__syscall_libc_fs_60027, 0x60027) /* could be fgetpos() */
 SYSCALL(fsetpos,  0x60028)
 SYSCALL(geterror, 0x60029)
 SYSCALL(opendir,  0x6002a)
