@@ -8,3 +8,5 @@ libactsemi.a: $(OBJS)
 
 clean:
 	rm -f libactsemi.a $(OBJS)
+
+actsemi.o: actsemi.h
